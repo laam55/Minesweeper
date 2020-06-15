@@ -1,0 +1,158 @@
+@import url("https://fonts.googleapis.com/css?family=Fjalla+One|Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+
+/* common */
+.pointer {
+  cursor: pointer;
+}
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+@font-face {
+  font-family: "number";
+  src: url(./assets/fonts/digital-7.ttf);
+}
+
+.App {
+  text-align: center;
+  perspective: 1000px;
+  background-color: #888;
+  background-color: #282c34;
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper {
+  height: 90%;
+  width: 90%;
+  padding: 10px;
+  border-left: 5px solid #dcdcdc;
+  border-top: 5px solid #dcdcdc;
+  border-right: 5px solid #333;
+  border-bottom: 5px solid #333;
+  box-sizing: border-box;
+  background-color: silver;
+}
+
+.wrapper__left {
+  height: 100%;
+  width: 75%;
+  float: left;
+  overflow: hidden;
+  border-left: 5px solid #333;
+  border-top: 5px solid #333;
+  border-right: 5px solid #dcdcdc;
+  border-bottom: 5px solid #dcdcdc;
+  box-sizing: border-box;
+}
+
+.wrapper__right {
+  height: 100%;
+  width: calc(25% - 10px);
+  float: right;
+  overflow: hidden;
+  margin-left: 10px;
+  border-left: 5px solid #333;
+  border-top: 5px solid #333;
+  border-right: 5px solid #dcdcdc;
+  border-bottom: 5px solid #dcdcdc;
+  box-sizing: border-box;
+}
+
+/* BOARD */
+/* RIGHT */
+h3 {
+  text-align: center;
+  color: white;
+}
+.wrapper__right p.score {
+  font-family: "number";
+  font-size: 70px;
+  outline: none;
+}
+.wrapper__right p {
+  font-family: "number";
+  font-size: 32px;
+  outline: none;
+  margin: 5px auto;
+}
+.btnStartGame {
+  background-color: #888;
+  color: black;
+  vertical-align: top;
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  border-left: 5px solid #dcdcdc;
+  border-top: 5px solid #dcdcdc;
+  border-bottom: 5px solid #333;
+  border-right: 5px solid #333;
+  display: inline-block;
+}
+
+.generate {
+  width: 150px;
+  border: 2px solid white;
+  background: transparent;
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  margin-top: 10px;
+}
+
+/* LEFT */
+.board {
+  /* transform: rotateX(20deg); */
+  padding: 5px;
+}
+
+.board div {
+  cursor: pointer;
+}
+
+.buttonStyle {
+  width: 40px;
+  height: 40px;
+  background-color: #888;
+  color: black;
+  vertical-align: top;
+  font-size: 32px;
+  font-family: Arial, Helvetica, sans-serif;
+  border-left: 5px solid #dcdcdc;
+  border-top: 5px solid #dcdcdc;
+  border-bottom: 5px solid #333;
+  border-right: 5px solid #333;
+  display: inline-block;
+}
+
+.openedStyle {
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  background-color: #555;
+  color: white;
+  font-weight: bold;
+  border: 1px solid black;
+  vertical-align: top;
+  font-size: 32px;
+  font-family: "Montserrat", sans-serif;
+  display: inline-block;
+}
+
+.bombImg {
+  width: 90%;
+  height: 90%;
+  margin-top: 5%;
+  margin-left: 5%;
+}

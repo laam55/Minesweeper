@@ -14,12 +14,18 @@ export const LEVEL = {
     bombTotal: 26,
     vertical: 14,
     horizontal: 18,
-    countDown: 90,
+    countDown: 75,
   },
   HARD: {
     bombTotal: 99,
     vertical: 20,
     horizontal: 20,
     countDown: 300,
+  },
+  SHARD: {
+    bombTotal: 256,
+    vertical: 32,
+    horizontal: 32,
+    countDown: 600,
   },
 }

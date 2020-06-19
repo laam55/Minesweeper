@@ -27,7 +27,7 @@ function App() {
 
   const scrollWrapper = (e) => {
     let diff = 0.1;
-    if (boardRef.current) {
+    if (boardRef.current && !e.ctrlKey) {
       let scale = boardRef.current.style.transform;
       scale = parseFloat(scale.split("scale(")[1].split(")")[0]);
 
@@ -152,6 +152,7 @@ function App() {
               <option value="EASY">EASY</option>
               <option value="MEDIUM">MEDIUM</option>
               <option value="HARD">HARD</option>
+              <option value="SHARD">SUPPER HARD</option>
           </select>
           <br />
           <br />

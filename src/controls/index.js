@@ -4,6 +4,7 @@ import { START, PLAYING, WIN, LOSE } from "./../constants";
 let refreshIntervalId;
 const useControl = (config) => {
   const [bombs, setBombs] = useState([]);
+  const [flags, setFlags] = useState([]);
   const [openedCells, setOpenedCells] = useState([]);
   const [countDown, setCountDown] = useState(config.countDown);
   const [status, setStatus] = useState(START);
@@ -14,7 +15,8 @@ const useControl = (config) => {
 
   useEffect(() => {
     if (checkWinner()) {
-      setStatus(LOSE);
+      setStatus(WIN);
+      clearInterval(refreshIntervalId);
     }
   }, [openedCells]);
 
@@ -41,18 +43,24 @@ const useControl = (config) => {
     });
   };
 
-  const loseCannotPlayGame = () => {
-    if (status === LOSE) throw "You lose!";
+  const loseOrWinCannotPlayGame = () => {
+    if (status === LOSE || status === WIN) throw "You lose!";
   };
 
   const generateBombs = () => {
-    let bombArr = Array(10)
+    let bombArr = Array(config.vertical)
       .fill(0)
-      .map((elem) => Array(10).fill(0));
+      .map((elem) => Array(config.horizontal).fill(0));
+    let flagsArr = Array(config.vertical)
+      .fill(0)
+      .map((elem) => Array(config.horizontal).fill(0));
 
-    for (let i = 0; i < bombArr.length; i++) {
-      let bombPos = Math.floor(Math.random() * 10);
-      bombArr[i][bombPos] = "X";
+    const bombsPerLine = Math.ceil(config.bombTotal / config.vertical);
+    for (let i = 0; i < config.vertical; i++) {
+      for (let index = 0; index < bombsPerLine; index++) {
+        let bombPos = Math.floor(Math.random() * config.horizontal);
+        bombArr[i][bombPos] = "X";
+      }
     }
 
     for (let i = 0; i < bombArr.length; i++) {
@@ -81,26 +89,37 @@ const useControl = (config) => {
       }
     }
     setBombs(bombArr);
+    setFlags(flagsArr);
 
-    let cover = Array(10)
+    let cover = Array(config.vertical)
       .fill(0)
-      .map((elem) => Array(10).fill(0));
+      .map((elem) => Array(config.horizontal).fill(0));
     setOpenedCells(cover);
   };
 
   // handle click cell
   const handleClickRightMouse = (e, i, j) => {
     e.preventDefault();
-    loseCannotPlayGame();
-    console.log("right click", i, j);
+    loseOrWinCannotPlayGame();
+    if (openedCells[i][j] === 1) return;
+    flags[i][j] = flags[i][j] === 1 ? 0 : 1;
+    setFlags([...flags]);
   };
   const handleClickCell = (i, j) => {
+    if (flags[i][j] === 1) {
+      return false;
+    }
     if (bombs[i][j] === "X") {
+      setFlags(
+        Array(config.vertical)
+          .fill(0)
+          .map((elem) => Array(config.horizontal).fill(0))
+      );
       showAllBoard();
       endGame();
       return;
     }
-    loseCannotPlayGame();
+    loseOrWinCannotPlayGame();
     spreadToCells(i, j);
     openedCells[i][j] = 1;
     setOpenedCells([...openedCells]);
@@ -122,29 +141,34 @@ const useControl = (config) => {
     setOpenedCells([...openedCells]);
     if (bombs[i][j] < 1) {
       spreadToCells(i + 1, j);
-      spreadToCells(i - 1, j);
+      spreadToCells(i + 1, j + 1);
       spreadToCells(i, j + 1);
+      spreadToCells(i - 1, j + 1);
+      spreadToCells(i - 1, j);
+      spreadToCells(i - 1, j - 1);
       spreadToCells(i, j - 1);
+      spreadToCells(i + 1, j - 1);
     }
   }
 
   // after end game
   const showAllBoard = () => {
-    let cover = Array(10)
+    let cover = Array(config.vertical)
       .fill(1)
-      .map((elem) => Array(10).fill(1));
+      .map((elem) => Array(config.horizontal).fill(1));
     setOpenedCells(cover);
   };
 
   const endGame = () => {
     setStatus(LOSE);
+    clearInterval(refreshIntervalId);
   };
 
   const checkWinner = () => {
     let countButtonRemain = 0;
     for (let i = 0; i < openedCells.length; i++) {
       for (let j = 0; j < openedCells[i].length; j++) {
-        if (openedCells[i][j] === 1) countButtonRemain++;
+        if (openedCells[i][j] === 0) countButtonRemain++;
       }
     }
 
@@ -156,6 +180,7 @@ const useControl = (config) => {
   return {
     // data
     bombs,
+    flags,
     openedCells,
     countDown,
     status,

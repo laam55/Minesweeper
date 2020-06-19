@@ -8,6 +8,7 @@ const useControl = (config) => {
   const [openedCells, setOpenedCells] = useState([]);
   const [countDown, setCountDown] = useState(config.countDown);
   const [status, setStatus] = useState(START);
+  const [lastClickCell, setLastClickCell] = useState(null);
 
   useEffect(() => {
     return () => clearInterval(refreshIntervalId);
@@ -15,17 +16,28 @@ const useControl = (config) => {
 
   useEffect(() => {
     if (checkWinner()) {
-      setStatus(WIN);
-      clearInterval(refreshIntervalId);
+      winGame();
     }
   }, [openedCells]);
 
   useEffect(() => {
     if (countDown === 0) {
-      setStatus(LOSE);
-      clearInterval(refreshIntervalId);
+      endGame();
     }
   }, [countDown]);
+
+  // start game
+  const startGame = () => {
+    setConfigBoard()
+    setStatus(PLAYING);
+    startCountDown();
+  };
+
+  const setConfigBoard = () => {
+    refreshIntervalId && clearInterval(refreshIntervalId)
+    setCountDown(config.countDown);
+    generateBombs();
+  }
 
   const startCountDown = () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
@@ -34,32 +46,31 @@ const useControl = (config) => {
     }, 1000);
   };
 
-  const startGame = () => {
-    setCountDown(config.countDown);
-    setStatus((status) => {
-      startCountDown();
-      generateBombs();
-      return PLAYING;
-    });
-  };
-
-  const loseOrWinCannotPlayGame = () => {
-    if (status === LOSE || status === WIN) throw "You lose!";
-  };
-
   const generateBombs = () => {
+    // create list bombs
     let bombArr = Array(config.vertical)
       .fill(0)
       .map((elem) => Array(config.horizontal).fill(0));
-    let flagsArr = Array(config.vertical)
-      .fill(0)
-      .map((elem) => Array(config.horizontal).fill(0));
 
-    const bombsPerLine = Math.ceil(config.bombTotal / config.vertical);
-    for (let i = 0; i < config.vertical; i++) {
-      for (let index = 0; index < bombsPerLine; index++) {
-        let bombPos = Math.floor(Math.random() * config.horizontal);
-        bombArr[i][bombPos] = "X";
+    let bombsCount = 0
+    // for (let i = 0; i < config.vertical; i++) {
+    //   let bombsPerLine = Math.floor(config.bombTotal / config.vertical) + Math.round(Math.random());
+    //   for (let index = 0; index < bombsPerLine; index++) {
+    //     if (bombsCount < config.bombTotal) {
+    //       let bombPos = Math.floor(Math.random() * config.horizontal);
+    //       bombArr[i][bombPos] = "X";
+    //       bombsCount ++
+    //     }
+    //   }
+    // }
+
+    while (bombsCount < config.bombTotal) {
+      let i =  Math.floor(Math.random() * config.vertical)
+      let j =  Math.floor(Math.random() * config.horizontal)
+
+      if (bombArr[i][j] != "X") {
+        bombArr[i][j] = "X";
+        bombsCount++
       }
     }
 
@@ -69,28 +80,27 @@ const useControl = (config) => {
           let sum = 0;
 
           if (i > 0 && bombArr[i - 1][j] === "X") sum++;
+          if (i > 0 && j < bombArr[i].length - 1 && bombArr[i - 1][j + 1] === "X") sum++;
+          if (j < bombArr[i].length - 1 && bombArr[i][j + 1] === "X") sum++;
+          if (i < bombArr.length - 1 && j < bombArr[i].length - 1 && bombArr[i + 1][j + 1] === "X") sum++;
           if (i < bombArr.length - 1 && bombArr[i + 1][j] === "X") sum++;
-          if (j < bombArr.length - 1 && bombArr[i][j + 1] === "X") sum++;
+          if (i < bombArr.length - 1 && bombArr[i + 1][j - 1] === "X") sum++;
           if (j > 0 && bombArr[i][j - 1] === "X") sum++;
-          if (i < bombArr.length - 1 && j > 0 && bombArr[i + 1][j - 1] === "X")
-            sum++;
-          if (
-            i < bombArr.length - 1 &&
-            j < bombArr.length - 1 &&
-            bombArr[i + 1][j + 1] === "X"
-          )
-            sum++;
           if (i > 0 && j > 0 && bombArr[i - 1][j - 1] === "X") sum++;
-          if (i > 0 && j < bombArr.length - 1 && bombArr[i - 1][j + 1] === "X")
-            sum++;
 
           bombArr[i][j] = sum;
         }
       }
     }
     setBombs(bombArr);
+
+    // create list flag
+    let flagsArr = Array(config.vertical)
+      .fill(0)
+      .map((elem) => Array(config.horizontal).fill(0));
     setFlags(flagsArr);
 
+    // create list cover
     let cover = Array(config.vertical)
       .fill(0)
       .map((elem) => Array(config.horizontal).fill(0));
@@ -109,14 +119,9 @@ const useControl = (config) => {
     if (flags[i][j] === 1) {
       return false;
     }
+    setLastClickCell(`${i},${j}`)
     if (bombs[i][j] === "X") {
-      setFlags(
-        Array(config.vertical)
-          .fill(0)
-          .map((elem) => Array(config.horizontal).fill(0))
-      );
-      showAllBoard();
-      endGame();
+      clickToBombs()
       return;
     }
     loseOrWinCannotPlayGame();
@@ -152,6 +157,19 @@ const useControl = (config) => {
   }
 
   // after end game
+  const clickToBombs = () => {
+    setFlags(
+      Array(config.vertical)
+        .fill(0)
+        .map((elem) => Array(config.horizontal).fill(0))
+    );
+    endGame();
+  }
+
+  const loseOrWinCannotPlayGame = () => {
+    if (status === LOSE || status === WIN) throw "You lose!";
+  };
+
   const showAllBoard = () => {
     let cover = Array(config.vertical)
       .fill(1)
@@ -159,9 +177,18 @@ const useControl = (config) => {
     setOpenedCells(cover);
   };
 
+  const winGame = () => {
+    alert("You win!");
+    setStatus(WIN);
+    clearInterval(refreshIntervalId);
+    showAllBoard();
+  };
+
   const endGame = () => {
+    alert("You lose!");
     setStatus(LOSE);
     clearInterval(refreshIntervalId);
+    showAllBoard();
   };
 
   const checkWinner = () => {
@@ -179,11 +206,14 @@ const useControl = (config) => {
 
   return {
     // data
+    lastClickCell,
     bombs,
     flags,
     openedCells,
     countDown,
     status,
+    // func
+    setConfigBoard,
     startGame,
     endGame,
     checkWinner,

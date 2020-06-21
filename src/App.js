@@ -89,7 +89,7 @@ function App() {
     height: 48 * config.vertical,
     cursor: "pointer",
     // transform: `scale(1)`,
-    transform: `translate(-50%, -50%) scale(${500 / (48 * config.vertical)})`,
+    transform: `translate(-50%, -50%) scale(${465 / (48 * config.vertical)})`,
     left: "50%",
     top: "50%",
     position: "absolute",

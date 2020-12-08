@@ -163,9 +163,9 @@ function App() {
           <br />
           <br />
           {/* fullname button */}
-          <button className="btnStartGame pointer" onClick={handleFullScreen}>
+          {/* <button className="btnStartGame pointer" onClick={handleFullScreen}>
             Full screen
-          </button>
+          </button> */}
         </section>
       </div>
     </div>
